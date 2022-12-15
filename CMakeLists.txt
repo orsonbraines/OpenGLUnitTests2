@@ -419,6 +419,34 @@ target_link_libraries(tutorial14_render_to_texture
 set_target_properties(tutorial14_render_to_texture PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial14_render_to_texture/")
 create_target_launcher(tutorial14_render_to_texture WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial14_render_to_texture/")
 
+# Manual Test 2
+add_executable(test02
+	ManualTest2/test02.cpp
+	common/shader.cpp
+	common/shader.hpp
+	common/controls.cpp
+	common/controls.hpp
+	common/texture.cpp
+	common/texture.hpp
+	common/objloader.cpp
+	common/objloader.hpp
+	common/vboindexer.cpp
+	common/vboindexer.hpp
+	common/text2D.hpp
+	common/text2D.cpp
+	
+	ManualTest2/StandardShadingRTT.vertexshader
+	ManualTest2/StandardShadingRTT.fragmentshader
+	ManualTest2/Passthrough.vertexshader
+	ManualTest2/WobblyTexture.fragmentshader
+)
+target_link_libraries(test02
+	${ALL_LIBS}
+)
+# Xcode and Visual working directories
+set_target_properties(test02 PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest2/")
+create_target_launcher(test02 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest2/")
+
 
 # Tutorial 15
 add_executable(tutorial15_lightmaps
@@ -689,6 +717,10 @@ add_custom_command(
 add_custom_command(
    TARGET test01 POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test01${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest1/"
+)
+add_custom_command(
+   TARGET test02 POST_BUILD
+   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test02${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest2/"
 )
 add_custom_command(
    TARGET tutorial03_matrices POST_BUILD
