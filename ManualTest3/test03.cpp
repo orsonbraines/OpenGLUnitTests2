@@ -64,7 +64,7 @@ int main( void )
 	GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
 
 
-	static const GLfloat g_vertex_buffer_data[] = { 
+	static GLfloat g_vertex_buffer_data[] = { 
 		-1.0f, -1.0f, 0.0f,
 		 1.0f, -1.0f, 0.0f,
 		 0.0f,  1.0f, 0.0f,
@@ -73,7 +73,7 @@ int main( void )
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
 
 	GLuint colourLoc = glGetUniformLocation(programID, "uColour");
 
@@ -98,9 +98,15 @@ int main( void )
 		);
 
 		glEnable(GL_SAMPLE_MASK);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_ALWAYS);
 		
 		for (uint32_t i = 0; i < 4; ++i) {
 			// Draw the triangle !
+			for (int j = 0; j < 3; ++j) {
+				g_vertex_buffer_data[3 * j + 2] = 0.3f * i;
+			}
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(g_vertex_buffer_data), g_vertex_buffer_data);
 			glUniform3f(colourLoc, 0.3f * i, 0.3f * i , 0.3f * i);
 			glSampleMaski(0, 1u  << i );
 			glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
