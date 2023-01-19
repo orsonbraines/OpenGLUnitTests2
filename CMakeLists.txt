@@ -80,7 +80,7 @@ target_link_libraries(tutorial02_red_triangle
 	${ALL_LIBS}
 )
 
-#Manualm test 1
+#Manual test 1
 add_executable(test01 
 	ManualTest1/test01.cpp
 	common/shader.cpp
@@ -90,6 +90,19 @@ add_executable(test01
 	ManualTest1/SimpleVertexShader.vertexshader
 )
 target_link_libraries(test01
+	${ALL_LIBS}
+)
+
+#Manual test 3
+add_executable(test03 
+	ManualTest3/test03.cpp
+	common/shader.cpp
+	common/shader.hpp
+	
+	ManualTest3/SimpleFragmentShader.fragmentshader
+	ManualTest3/SimpleVertexShader.vertexshader
+)
+target_link_libraries(test03
 	${ALL_LIBS}
 )
 
@@ -721,6 +734,10 @@ add_custom_command(
 add_custom_command(
    TARGET test02 POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test02${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest2/"
+)
+add_custom_command(
+   TARGET test03 POST_BUILD
+   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test03${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest3/"
 )
 add_custom_command(
    TARGET tutorial03_matrices POST_BUILD
