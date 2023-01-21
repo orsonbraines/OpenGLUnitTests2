@@ -1,6 +1,8 @@
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
+#include <cassert>
+#include <iostream>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -32,7 +34,7 @@ int main( void )
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "Tutorial 02 - Red triangle", NULL, NULL);
+	window = glfwCreateWindow( 1024, 768, "Team Objective Test 3", NULL, NULL);
 	if( window == NULL ){
 		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
 		getchar();
@@ -77,10 +79,47 @@ int main( void )
 
 	GLuint colourLoc = glGetUniformLocation(programID, "uColour");
 
+	GLuint framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	GLuint textures[3];
+	glGenTextures(3, textures);
+
+	for (int i = 0; i < 2; i++) {
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures[i]);
+		GLenum internalFormat;
+		GLenum attachment;
+		switch(i) {
+			case 0:
+				internalFormat = GL_RGBA8;
+				attachment = GL_COLOR_ATTACHMENT0;
+				break;
+			case 1:
+				internalFormat = GL_DEPTH24_STENCIL8;
+				attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+				break;
+			// case 2:
+			// 	internalFormat = GL_STENCIL_INDEX8;
+			// 	attachment = GL_STENCIL_ATTACHMENT;
+			// 	break;
+		}
+
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, internalFormat, 1024, 768, true);
+		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture(GL_FRAMEBUFFER, attachment, textures[i], 0);
+	}
+
+	GLenum check = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	std::cerr << "GL check: " << check << std::endl;
+	assert(check == GL_FRAMEBUFFER_COMPLETE);
+
 	do{
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 		// Clear the screen
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		// Use our shader
 		glUseProgram(programID);
@@ -113,6 +152,9 @@ int main( void )
 		}
 
 		glDisableVertexAttribArray(0);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, 1024, 768, 0, 0, 1024, 768, GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 		// Swap buffers
 		glfwSwapBuffers(window);
