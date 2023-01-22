@@ -17,6 +17,23 @@ using namespace glm;
 
 #include <common/shader.hpp>
 
+void GLAPIENTRY
+MessageCallback(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	const void* userParam)
+{
+	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+		type, severity, message);
+}
+
+#define DEBUG_OPENGL(x) { x; GLenum error = glGetError(); if (error) { std::cerr << "Error on line " << __LINE__ << " : " << (int) error << std::endl; } }
+
+
 int main( void )
 {
 	// Initialise GLFW
@@ -52,15 +69,21 @@ int main( void )
 		return -1;
 	}
 
+	// During init, enable debug output
+	// glEnable(GL_DEBUG_OUTPUT);
+	// glDebugMessageCallback(MessageCallback, 0);
+
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
+	while (glGetError()) {}
+
 	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	DEBUG_OPENGL(glClearColor(0.0f, 0.0f, 0.4f, 0.0f));
 
 	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	DEBUG_OPENGL(glGenVertexArrays(1, &VertexArrayID));
+	DEBUG_OPENGL(glBindVertexArray(VertexArrayID));
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
@@ -84,36 +107,33 @@ int main( void )
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	GLuint textures[3];
-	glGenTextures(3, textures);
+	DEBUG_OPENGL(glGenTextures(3, textures));
 
-	for (int i = 0; i < 2; i++) {
-		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures[i]);
+	for (int i = 0; i < 3; i++) {
+		DEBUG_OPENGL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures[i]));
 		GLenum internalFormat;
 		GLenum attachment;
-		switch(i) {
-			case 0:
-				internalFormat = GL_RGBA8;
-				attachment = GL_COLOR_ATTACHMENT0;
-				break;
-			case 1:
-				internalFormat = GL_DEPTH24_STENCIL8;
-				attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-				break;
-			// case 2:
-			// 	internalFormat = GL_STENCIL_INDEX8;
-			// 	attachment = GL_STENCIL_ATTACHMENT;
-			// 	break;
+		switch (i) {
+		case 0:
+			internalFormat = GL_RGBA8;
+			attachment = GL_COLOR_ATTACHMENT0;
+			break;
+		case 1:
+			internalFormat = GL_DEPTH_COMPONENT32F;
+			attachment = GL_DEPTH_ATTACHMENT;
+			break;
+		case 2:
+			internalFormat = GL_STENCIL_INDEX8;
+			attachment = GL_STENCIL_ATTACHMENT;
+			break;
 		}
-
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, internalFormat, 1024, 768, true);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture(GL_FRAMEBUFFER, attachment, textures[i], 0);
+		DEBUG_OPENGL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, internalFormat, 1024, 768, true));
+		//DEBUG_OPENGL(glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+		//DEBUG_OPENGL(glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		DEBUG_OPENGL(glFramebufferTexture(GL_FRAMEBUFFER, attachment, textures[i], 0));
 	}
 
-	GLenum check = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	std::cerr << "GL check: " << check << std::endl;
-	assert(check == GL_FRAMEBUFFER_COMPLETE);
+	DEBUG_OPENGL(GLenum check = glCheckFramebufferStatus(GL_FRAMEBUFFER); std::cerr << "GL check: " << check << std::endl; assert(check == GL_FRAMEBUFFER_COMPLETE););
 
 	do{
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -160,6 +180,7 @@ int main( void )
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
+		// std::cout << (int) glGetError() << std::endl;
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
 		   glfwWindowShouldClose(window) == 0 );
@@ -168,7 +189,7 @@ int main( void )
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
-
+	assert(glGetError() == 0);
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 
