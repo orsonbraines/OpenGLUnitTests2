@@ -93,6 +93,9 @@ int main( void )
 		-1.0f, -1.0f, 0.0f,
 		 1.0f, -1.0f, 0.0f,
 		 0.0f,  1.0f, 0.0f,
+		-1.0f,  0.2f, 0.0f,
+		-1.0f, -0.2f, 0.0f,
+		 1.0f,  0.0f, 0.0f
 	};
 
 	GLuint vertexbuffer;
@@ -165,13 +168,14 @@ int main( void )
 		
 		for (uint32_t i = 0; i < 4; ++i) {
 			// Draw the triangle !
-			for (int j = 0; j < 3; ++j) {
+			for (int j = 0; j < 6; ++j) {
 				g_vertex_buffer_data[3 * j + 2] = 0.3f * i;
+
 			}
 			DEBUG_OPENGL(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(g_vertex_buffer_data), g_vertex_buffer_data));
 			DEBUG_OPENGL(glUniform3f(colourLoc, 0.3f * i, 0.3f * i , 0.3f * i));
 			DEBUG_OPENGL(glSampleMaski(0, 1u  << i ));
-			DEBUG_OPENGL(glDrawArrays(GL_TRIANGLES, 0, 3)); // 3 indices starting at 0 -> 1 triangle
+			DEBUG_OPENGL(glDrawArrays(GL_TRIANGLES, 0, 6)); // 6 indices starting at 0 -> 1 triangle
 		}
 
 		DEBUG_OPENGL(glDisableVertexAttribArray(0));
