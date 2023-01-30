@@ -112,29 +112,24 @@ int main( void )
 	GLuint textures[3];
 	DEBUG_OPENGL(glGenTextures(3, textures));
 
-	for (int i = 0; i < 2; i++) {
-		DEBUG_OPENGL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures[i]));
-		GLenum internalFormat;
-		GLenum attachment;
-		switch (i) {
-		case 0:
-			internalFormat = GL_RGBA8;
-			attachment = GL_COLOR_ATTACHMENT0;
-			break;
-		//case 1:
-		//	internalFormat = GL_DEPTH_COMPONENT32F;
-		//	attachment = GL_DEPTH_ATTACHMENT;
-		//	break;
-		case 1:
-			internalFormat = GL_STENCIL_INDEX8;
-			attachment = GL_STENCIL_ATTACHMENT;
-			break;
-		}
-		DEBUG_OPENGL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, internalFormat, 1024, 768, true));
-		//DEBUG_OPENGL(glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-		//DEBUG_OPENGL(glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		DEBUG_OPENGL(glFramebufferTexture(GL_FRAMEBUFFER, attachment, textures[i], 0));
-	}
+	DEBUG_OPENGL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures[0]));
+	GLenum internalFormat = GL_RGBA8;
+	GLenum attachment = GL_COLOR_ATTACHMENT0;
+
+	DEBUG_OPENGL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, internalFormat, 1024, 768, true));
+	//DEBUG_OPENGL(glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	//DEBUG_OPENGL(glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+	DEBUG_OPENGL(glFramebufferTexture(GL_FRAMEBUFFER, attachment, textures[0], 0));
+
+	DEBUG_OPENGL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures[1]));
+	internalFormat = GL_STENCIL_INDEX8;
+	attachment = GL_STENCIL_ATTACHMENT;
+
+	DEBUG_OPENGL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, internalFormat, 1024, 768, true));
+	DEBUG_OPENGL(glFramebufferTexture(GL_FRAMEBUFFER, attachment, textures[1], 0));
+
+//	internalFormat = GL_DEPTH_COMPONENT32F;
+//	attachment = GL_DEPTH_ATTACHMENT;
 
 	DEBUG_OPENGL(GLenum check = glCheckFramebufferStatus(GL_FRAMEBUFFER); std::cerr << "GL check: " << check << std::endl; assert(check == GL_FRAMEBUFFER_COMPLETE););
 
@@ -170,7 +165,6 @@ int main( void )
 			// Draw the triangle !
 			for (int j = 0; j < 6; ++j) {
 				g_vertex_buffer_data[3 * j + 2] = 0.3f * i;
-
 			}
 			DEBUG_OPENGL(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(g_vertex_buffer_data), g_vertex_buffer_data));
 			DEBUG_OPENGL(glUniform3f(colourLoc, 0.3f * i, 0.3f * i , 0.3f * i));
