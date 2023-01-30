@@ -7,8 +7,5 @@ uniform vec3 uColour;
 
 void main()
 {
-
-	// Output color = adjlfhrajlhfksdh 
-	color = uColour;
-
+	color = uColour + vec3(0.2, 0, 0) * float(gl_PrimitiveID);
 }
