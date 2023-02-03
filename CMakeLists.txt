@@ -162,6 +162,24 @@ target_link_libraries(tutorial05_textured_cube
 set_target_properties(tutorial05_textured_cube PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial05_textured_cube/")
 create_target_launcher(tutorial05_textured_cube WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial05_textured_cube/")
 
+# Manual Test 4
+add_executable(test04
+	ManualTest4/test04.cpp
+	common/shader.cpp
+	common/shader.hpp
+	common/texture.cpp
+	common/texture.hpp
+	
+	ManualTest4/TransformVertexShader.vertexshader
+	ManualTest4/TextureFragmentShader.fragmentshader
+)
+target_link_libraries(test04
+	${ALL_LIBS}
+)
+# Xcode and Visual working directories
+set_target_properties(test04 PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest4/")
+create_target_launcher(test04 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest4/")
+
 # Tutorial 6
 add_executable(tutorial06_keyboard_and_mouse
 	tutorial06_keyboard_and_mouse/tutorial06.cpp
@@ -738,6 +756,10 @@ add_custom_command(
 add_custom_command(
    TARGET test03 POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test03${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest3/"
+)
+add_custom_command(
+   TARGET test04 POST_BUILD
+   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test04${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest4/"
 )
 add_custom_command(
    TARGET tutorial03_matrices POST_BUILD

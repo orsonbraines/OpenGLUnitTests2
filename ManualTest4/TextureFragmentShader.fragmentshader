@@ -1,0 +1,26 @@
+#version 460 core
+
+// Interpolated values from the vertex shaders
+in vec2 UV;
+
+// Ouput data
+out vec3 color;
+
+// Values that stay constant for the whole mesh.
+uniform sampler2D myTextureSampler;
+
+uniform layout(binding=3, rgba8) writeonly image2D writeTexture;
+
+void main(){
+
+	// Output color = color of the texture at the specified UV
+	color = texture( myTextureSampler, UV ).rgb;
+	imageStore(
+		writeTexture,
+		ivec2(
+			int(gl_FragCoord.x),
+			int(gl_FragCoord.y)
+		),
+		vec4(0.314, 0.272, 0.577, 0.162)
+	);
+}
