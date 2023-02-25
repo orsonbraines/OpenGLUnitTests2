@@ -106,6 +106,19 @@ target_link_libraries(test03
 	${ALL_LIBS}
 )
 
+#Manual test 5
+add_executable(test05 
+	ManualTest5/test05.cpp
+	common/shader.cpp
+	common/shader.hpp
+	
+	ManualTest5/SimpleFragmentShader.fragmentshader
+	ManualTest5/SimpleVertexShader.vertexshader
+)
+target_link_libraries(test05
+	${ALL_LIBS}
+)
+
 # Xcode and Visual working directories
 set_target_properties(tutorial02_red_triangle PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial02_red_triangle/")
 create_target_launcher(tutorial02_red_triangle WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial02_red_triangle/")
@@ -760,6 +773,10 @@ add_custom_command(
 add_custom_command(
    TARGET test04 POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test04${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest4/"
+)
+add_custom_command(
+   TARGET test05 POST_BUILD
+   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/test05${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/ManualTest5/"
 )
 add_custom_command(
    TARGET tutorial03_matrices POST_BUILD
